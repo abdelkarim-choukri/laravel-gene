@@ -1,6 +1,6 @@
 <script setup></script>
 <template>
-  <!-- <footer>
+  <footer>
     <div class="container">
       <div class="row">
         <div class="col-md-4">
@@ -20,6 +20,6 @@
         <a href="https://bioinformatics.um6p.ma">Website</a>
       </p>
     </div>
-  </footer> -->
-  <h1>hello</h1>
+  </footer>
+  
 </template>
