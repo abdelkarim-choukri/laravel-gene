@@ -1,7 +1,29 @@
+
 .navbar-collapse {
     flex-grow: 0 !important;
+}
 
+.test1 {
+    background-color: #6E85B7;
+}
+.center-row {
+    text-align: center;
 }
 body{
-    background-color: #f8f9fa;
+    background-color:#6E85B7;
+    font-family: Cairo,sans-serif!important;
+    
+    line-height: initial;
+    font-size: medium;
 }
+.text {
+    font-weight: 700!important;
+}
+.font-weight-bold {
+    font-weight: 700!important;
+    font-size: 2rem;
+}
+.select{
+    background-color: #fff ;
+}
+
