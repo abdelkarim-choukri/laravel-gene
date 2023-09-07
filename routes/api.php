@@ -14,6 +14,9 @@ use App\Http\Controllers\GeneDataController;
 |
 */
 Route::get('gene-data', 'App\Http\Controllers\GeneDataController@index');
+Route::get('/unique-gene-ids', 'App\Http\Controllers\GeneDataController@uniqueGeneIds');
+Route::get('/unique-sras', 'App\Http\Controllers\GeneDataController@uniqueSras');
+Route::get('/unique-expriments', 'App\Http\Controllers\GeneDataController@uniqueExpriments');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

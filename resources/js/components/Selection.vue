@@ -9,10 +9,18 @@
       <div class="form-row">
         <div class="form-group col-md-12 mt-3">
           <label class="mb-2">Select gene ids:</label>
-          <select class="form-control" id="geneIds" multiple v-model="geneIds">
-            <option v-for="gene in genes" :key="gene">{{ gene }}</option>
-          </select>
-        </div>
+          <Multiselect
+            v-model="genes.value"
+            mode="tags"
+            :close-on-select="false"
+            :searchable="true"
+            :create-option="true"
+            :options="genes"
+            :disabled="false"
+          />
+          
+      </div>
+
       </div>
 
       <!-- Second Row - Select Disease, Select Experiment, Select SRA -->
@@ -31,10 +39,7 @@
           <label class="mb-2">Select Experiment:</label>
           <select class="form-control" id="experiment" v-model="experiment">
             <option value="All">All</option>
-            <option value="Experiment 1">Experiment 1</option>
-            <option value="Experiment 2">Experiment 2</option>
-            <option value="Experiment 3">Experiment 3</option>
-            <option value="Experiment 4">Experiment 4</option>
+            <option v-for="expriment in expriments" :key="expriment">{{ expriment }}</option>
           </select>
         </div>
         <div class="col-md-4 mb-3">
@@ -56,7 +61,16 @@
 </template>
 
 <script>
+import axios from 'axios';
+
+import * as Vue from 'vue';
+
+import Multiselect from '@vueform/multiselect'
+
 export default {
+  components: {
+    Multiselect
+  },
   data() {
     return {
       geneIds: [],
@@ -64,21 +78,68 @@ export default {
       experiment: '',
       sra: '',
       genes: [], // Define your genes data here
-      sras: []   // Define your sras data here
+      sras: [] ,  // Define your sras data here
+      expriments: [], // Define your expriments data here
     }
   },
+  mounted() {
+    this.loadUniqueGeneIds();
+    this.loadUniqueSras();
+    this.loadUniqueExpriments();
+  },
   methods: {
-    clearSra() {
-      this.sra = '';
-    },
-    select() {
-      // Add your logic for the "Select" button action here
-    }
-  }
-}
-</script>
+async select() {
+  try {
+    const geneIds = this.geneIds;
+    const disease = this.disease;
+    const experiment = this.experiment;
+    const sra = this.sra;
 
-<style>
+    const url = 'http://127.0.0.1:8000/api/gene-data';
+    const params = {
+      gene_id: geneIds,
+      disease: disease,
+      experiment: experiment,
+      sra: sra
+    };
+
+    const response = await axios.get(url, { params });
+    // Do something with the response 
+    console.log(response.data);
+  } catch (error) {
+    console.log(error);
+  }
+},
+async loadUniqueGeneIds() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/unique-gene-ids');
+        this.genes = response.data; // Assign the response data to the genes property
+      } catch (error) {
+        console.error(error);
+      }
+    },
+async loadUniqueSras() {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/unique-sras');
+    this.sras = response.data; // Assign the response data to the sras property
+  } catch (error) {
+    console.error(error);
+  }
+  },
+async loadUniqueExpriments() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/unique-expriments');
+        this.expriments = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  },
+  }
+</script>
+<style src="@vueform/multiselect/themes/default.css" ></style>
+<style >
+
 .selection-class {
   background-color: #fff;
   padding: 20px;
@@ -110,7 +171,8 @@ export default {
 .form-row d-flex align-items-stretch {
   justify-content: space-between;}
   
+
+  
   
 </style>
-
 

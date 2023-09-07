@@ -12,8 +12,11 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@syncfusion/ej2-vue-dropdowns": "^22.2.12",
         "@vitejs/plugin-vue": "^4.3.4",
+        "@vueform/multiselect": "^2.6.2",
         "mix": "^0.0.1",
-        "vue": "^3.2.36"
+        "vue": "^3.2.36",
+        "vue-multiselect": "^2.1.7"
     }
 }
