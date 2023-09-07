@@ -65,5 +65,68 @@ public function uniqueExpriments(){
     return response()->json($uniqueExpriments);
 }
 
+public function getPossibleDiseases(Request $request){
+    // Check if 'gene_id' query parameter is provided
+    if ($request->has('gene_id')) {
+        $geneIds = $request->input('gene_id');
+        
+        // Use $geneIds to filter diseases for specific genes
+        // You would typically query your database here
+        $diseases = GeneData::whereIn('gene_id', $geneIds)->distinct()->pluck('disease');
+    } else {
+        // If 'gene_id' is not provided, consider all genes
+        // Query your database for all diseases here
+        $diseases = GeneData::distinct()->pluck('disease');
+    }
+
+    return response()->json($diseases);
+}
+
+public function getPossibleExperiments(Request $request)
+{
+    // Check if 'gene_id' and 'disease' query parameters are provided
+    if ($request->has('gene_id') && $request->has('disease')) {
+        $geneIds = $request->input('gene_id');
+        $disease = $request->input('disease');
+        
+        // Use $geneIds and $disease to filter experiments for specific genes and disease
+        // You would typically query your database here
+        $experiments = GeneData::whereIn('gene_id', $geneIds)
+            ->where('disease', $disease)
+            ->distinct()
+            ->pluck('expriment');
+    } else {
+        // If 'gene_id' and 'disease' are not provided, consider all experiments
+        // Query your database for all experiments here
+        $experiments = GeneData::distinct()->pluck('expriment');
+    }
+
+    return response()->json($experiments);
+}
+
+
+public function getPossibleSras(Request $request)
+{
+    // Check if 'gene_id', 'disease', and 'experiment' query parameters are provided
+    if ($request->has('gene_id') && $request->has('disease') && $request->has('experiment')) {
+        $geneIds = $request->input('gene_id');
+        $disease = $request->input('disease');
+        $experiment = $request->input('experiment');
+        
+        // Use $geneIds, $disease, and $experiment to filter SRAs
+        // You would typically query your database here
+        $sras = GeneData::whereIn('gene_id', $geneIds)
+            ->where('disease', $disease)
+            ->where('experiment', $experiment)
+            ->distinct()
+            ->pluck('sra');
+    } else {
+        // If any of the parameters is missing, consider all SRAs
+        // Query your database for all SRAs here
+        $sras = GeneData::distinct()->pluck('sra');
+    }
+
+    return response()->json($sras);
+}
 
 }

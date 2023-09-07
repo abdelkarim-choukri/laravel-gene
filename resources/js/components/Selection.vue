@@ -27,27 +27,35 @@
       <div class="row">
         <div class="col-md-4 mb-3">
           <label class="mb-2">Select Disease:</label>
-          <select class="form-control" id="disease" v-model="disease">
-            <option value="Autism">Autism</option>
-            <option value="Cancer">Cancer</option>
-            <option value="Heart disease">Heart disease</option>
-            <option value="Diabetes">Diabetes</option>
-            <option value="Stroke">Stroke</option>
-          </select>
+          <Multiselect
+            v-model="disease"
+            :options="['Autism', 'Cancer', 'disease','Diabetes', 'Stroke']"
+            placeholder="Search"
+          />
         </div>
         <div class="col-md-4 mb-3">
-          <label class="mb-2">Select Experiment:</label>
-          <select class="form-control" id="experiment" v-model="experiment">
+          <label class="mb-2">Select Expriment:</label>
+          <!-- <select class="form-control" id="experiment" v-model="experiment">
             <option value="All">All</option>
             <option v-for="expriment in expriments" :key="expriment">{{ expriment }}</option>
-          </select>
+          </select> -->
+          <Multiselect
+            
+            :options="expriments"
+            placeholder="Search"
+          />
         </div>
         <div class="col-md-4 mb-3">
           <label class="mb-2">Select SRA:</label>
-          <select class="form-control" id="sra" v-model="sra">
+          <!-- <select class="form-control" id="sra" v-model="sra">
             <option value="all">All</option>
             <option v-for="sra in sras" :key="sra">{{ sra }}</option>
-          </select>
+          </select> -->
+          <Multiselect
+            
+            :options="sras"
+            placeholder="Search"
+          />
           
         </div>
       </div>
@@ -80,6 +88,7 @@ export default {
       genes: [], // Define your genes data here
       sras: [] ,  // Define your sras data here
       expriments: [], // Define your expriments data here
+      diseases: []
     }
   },
   mounted() {
