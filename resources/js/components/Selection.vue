@@ -10,13 +10,14 @@
         <div class="form-group col-md-12 mt-3">
           <label class="mb-2">Select gene ids:</label>
           <Multiselect
-            v-model="genes.value"
+            v-model="geneIds"
             mode="tags"
             :close-on-select="false"
             :searchable="true"
             :create-option="true"
             :options="genes"
             :disabled="false"
+            placeholder="Select the gene ids"
           />
           
       </div>
@@ -29,7 +30,7 @@
           <label class="mb-2">Select Disease:</label>
           <Multiselect
             v-model="disease"
-            :options="['Autism', 'Cancer', 'disease','Diabetes', 'Stroke']"
+            :options="diseases"
             placeholder="Search"
           />
         </div>
@@ -72,9 +73,9 @@
 import axios from 'axios';
 
 import * as Vue from 'vue';
-
+import { ref,watch } from 'vue';
 import Multiselect from '@vueform/multiselect'
-
+import { watchEffect } from 'vue';
 export default {
   components: {
     Multiselect
@@ -93,9 +94,19 @@ export default {
   },
   mounted() {
     this.loadUniqueGeneIds();
-    this.loadUniqueSras();
-    this.loadUniqueExpriments();
+    this.loadUniqueDiseases();
+    watchEffect(() => {
+
+      if (this.disease === null || this.disease === '') {
+        this.expriments = [{ value: 'sorry', label: 'sorry, no match options', disabled: true },];
+        this.sras = [{ value: 'sorry', label: 'sorry, no match options', disabled: true },];
+      } else {
+        this.loadUniqueSras();
+        this.loadUniqueExpriments();
+      }
+    }, [this.disease]);
   },
+
   methods: {
 async select() {
   try {
@@ -114,6 +125,7 @@ async select() {
 
     const response = await axios.get(url, { params });
     // Do something with the response 
+    console.log(response.url);
     console.log(response.data);
   } catch (error) {
     console.log(error);
@@ -143,8 +155,23 @@ async loadUniqueExpriments() {
         console.error(error);
       }
     },
+
+async loadUniqueDiseases() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/diseases', {
+          params: {
+            gene_id: this.selectedGeneIds,
+          },
+        });
+        this.diseases = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
   }
+
+
 </script>
 <style src="@vueform/multiselect/themes/default.css" ></style>
 <style >
@@ -180,8 +207,14 @@ async loadUniqueExpriments() {
 .form-row d-flex align-items-stretch {
   justify-content: space-between;}
   
-
-  
+  .multiselect-option.is-disabled{
+    color:grey !important;
+  }
+  .multiselect-tag {
+    background-color: #F0F0F0 !important;
+    color: #797373 !important;
+    font: 16px  ;
+  }
   
 </style>
 

@@ -105,8 +105,7 @@ public function getPossibleExperiments(Request $request)
 }
 
 
-public function getPossibleSras(Request $request)
-{
+public function getPossibleSras(Request $request){
     // Check if 'gene_id', 'disease', and 'experiment' query parameters are provided
     if ($request->has('gene_id') && $request->has('disease') && $request->has('experiment')) {
         $geneIds = $request->input('gene_id');
@@ -127,6 +126,16 @@ public function getPossibleSras(Request $request)
     }
 
     return response()->json($sras);
+}
+
+
+public function uniqueDisease()
+{
+    $uniqueDiseases = GeneData::distinct()
+        ->pluck('disease')
+        ->toArray();
+
+    return response()->json( $uniqueDiseases);
 }
 
 }
