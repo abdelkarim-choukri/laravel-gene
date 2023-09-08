@@ -15,32 +15,21 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- <link href="{{ mix('css/app.css') }}" rel="stylesheet"> -->
-
+    <script src='https://www.gstatic.com/charts/loader.js'></script>
 
     @vite(['resources/js/app.js', 'resources/css/app.css'])
 </head>
 <body class="antialiased">
 <div id='app'>
-    <!-- Header -->
     
-        <heade></heade>
-
-        <!-- <div class="container mt-5 text1" >
-        <h1 class="text-center font-weight-bold text-white ">
-            Mentalome: Unveiling the Complex Landscape of Psychiatric Disorders through Comprehensive Transcriptome Analysis
-        </h1>
-        </div> -->
-<div class='select'><selection></selection></div>
-        
+    <heade></heade>
+    <div class='select'>
+        <selection></selection>
+        <heatmap></heatmap>
+    </div>
     <foote></foote>
 </div>
 
-<!-- Bootstrap JavaScript (Popper.js and Bootstrap JS) -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@2.10.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script> -->
-
-<!-- Include Vue.js and your app.js -->
-<!-- <script src="{{ mix('js/app.js') }}"></script> -->
 
 </body>
 </html>
