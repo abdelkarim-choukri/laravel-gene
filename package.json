@@ -18,6 +18,7 @@
         "google-charts": "^2.0.0",
         "mix": "^0.0.1",
         "vue": "^3.2.36",
-        "vue-multiselect": "^2.1.7"
+        "vue-multiselect": "^2.1.7",
+        "vue-router": "^4.2.4"
     }
 }

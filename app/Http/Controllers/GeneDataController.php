@@ -82,41 +82,41 @@ public function getPossibleDiseases(Request $request){
     return response()->json($diseases);
 }
 
-public function getPossibleExperiments(Request $request)
+public function getPossibleExpriments(Request $request)
 {
     // Check if 'gene_id' and 'disease' query parameters are provided
     if ($request->has('gene_id') && $request->has('disease')) {
         $geneIds = $request->input('gene_id');
         $disease = $request->input('disease');
         
-        // Use $geneIds and $disease to filter experiments for specific genes and disease
+        // Use $geneIds and $disease to filter expriments for specific genes and disease
         // You would typically query your database here
-        $experiments = GeneData::whereIn('gene_id', $geneIds)
+        $expriments = GeneData::whereIn('gene_id', $geneIds)
             ->where('disease', $disease)
             ->distinct()
             ->pluck('expriment');
     } else {
-        // If 'gene_id' and 'disease' are not provided, consider all experiments
-        // Query your database for all experiments here
-        $experiments = GeneData::distinct()->pluck('expriment');
+        // If 'gene_id' and 'disease' are not provided, consider all expriments
+        // Query your database for all expriments here
+        $expriments = GeneData::distinct()->pluck('expriment');
     }
 
-    return response()->json($experiments);
+    return response()->json($expriments);
 }
 
 
 public function getPossibleSras(Request $request){
-    // Check if 'gene_id', 'disease', and 'experiment' query parameters are provided
-    if ($request->has('gene_id') && $request->has('disease') && $request->has('experiment')) {
+    // Check if 'gene_id', 'disease', and 'expriment' query parameters are provided
+    if ($request->has('gene_id') && $request->has('disease') && $request->has('expriment')) {
         $geneIds = $request->input('gene_id');
         $disease = $request->input('disease');
-        $experiment = $request->input('experiment');
+        $expriment = $request->input('expriment');
         
-        // Use $geneIds, $disease, and $experiment to filter SRAs
+        // Use $geneIds, $disease, and $expriment to filter SRAs
         // You would typically query your database here
         $sras = GeneData::whereIn('gene_id', $geneIds)
             ->where('disease', $disease)
-            ->where('experiment', $experiment)
+            ->where('expriment', $expriment)
             ->distinct()
             ->pluck('sra');
     } else {

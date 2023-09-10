@@ -1,208 +1,170 @@
 <template>
-  <div class="container selection-class mb-3 selec" id="heatmap"></div>
+  <div class=" container .selection-class box shadow-lg rounded" >
+    <div class="text-center "  id="heatmap">
+    </div>
+</div>
 
 </template>
-
 <script>
+import { ref, onMounted, watch } from 'vue';
+
 export default {
   name: 'Heatmap',
-  mounted() {
-    // Load Google Charts and initialize the chart in the mounted hook
-    google.charts.load('upcoming', { packages: ['vegachart'] }).then(() => {
-      // A DataTable is required, but it can be empty.
-      const dataTable = new google.visualization.DataTable();
-
-      const options = {
-        'vega': {
-  "$schema": "https://vega.github.io/schema/vega/v5.json",
-  "width": 500,
-  "height": 500,
-  "padding": 5,
-
-  "title": {
-    "text": "Heatmap",
-    "anchor": "middle",
-    "fontSize": 16,
-    "frame": "group",
-    "offset": 4
+  props: {
+    apiUrl: String, // Assuming apiUrl is passed as a string
   },
+  setup(props) {
+    const chartData = ref(null);
+    // const dataTable = new google.visualization.DataTable();
+    let chart = null; // Variable to store the chart instance
+    const chartOptions = ref(null); // Variable to store chart options
 
-  "data": [
-    {
-      "name": "gene_data", // Name of your data set
-      "url": "http://127.0.0.1:8000/api/gene-data?gene_id[]=A1BG&gene_id[]=A2M&gene_id[]=A3GALT2&Disease=Autism&Expriment=PRJNA143369&SRA=SRR309133",
-      "format": {"type": "json"},}
-  ],
+    // Function to redraw the chart with the updated URL
+    const redrawChart = (newApiUrl) => {
+      const dataTable = new google.visualization.DataTable();
+      if (chart && chartOptions.value) {
+        chartOptions.value.vega.data[0].url = newApiUrl; // Update the URL in the chart options
+        console.log('chartOptions', chartOptions.value);
+        chart.draw(dataTable, chartOptions.value); // Redraw the chart with updated options
+      }
+    };
 
-  "scales": [
-    {
-      "name": "x",
-      "type": "band",
-      "domain": {"data": "gene_data", "field": "SRA"},
-      "range": "width"
-
-    },
-    {
-      "name": "y",
-      "type": "band",
-      "domain": {"data": "gene_data", "field": "gene_id"},
-      "range": "height",
-      
-      
-    },
-    {
-      "name": "color",
-      "type": "linear",
-      "range": {"scheme": "redyellowblue"},
-      "domain": {"data": "gene_data", "field": "value"},
-      "reverse": true,
-      "zero": false, "nice": true
-    }
-  ],
-
-  "axes": [
-    {"orient": "bottom", "scale": "x", "domain": false, "title": "SRA"},
-    {
-    "orient": "left",
-    "scale": "y",
-    "domain": false,
-    "title": "Gene ID",
-    
-  }
-  ],
-
-  "legends": [
-    {
-      "fill": "color",
-      "type": "gradient",
-      "title": "Value",
-      "titleFontSize": 12,
-      "titlePadding": 4,
-      "gradientLength": {"signal": "height - 16"}
-    }
-  ],
-
-  "marks": [
-    {
-      "type": "rect",
-      "from": {"data": "gene_data"},
-      "encode": {
-        "enter": {
-          "x": {"scale": "x", "field": "SRA"},
-          "y": {"scale": "y", "field": "gene_id"},
-          "width": {"value": 500},
-          "height": {"scale": "y", "band": 1},
-          "tooltip": {
-            "signal":
-              "datum.SRA + ' - ' + datum.gene_id + ': ' + datum.value"
-          }
-        },
-        "update": {
-          "fill": {"scale": "color", "field": "value"}
+    // Create a watch function to react to changes in the apiUrl prop
+    watch(
+      () => props.apiUrl,
+      (newApiUrl, oldApiUrl) => {
+        // apiUrl has changed, update the chart
+        if (newApiUrl !== oldApiUrl) {
+          chartData.value = newApiUrl; // Update chart data (you can also trigger a chart redraw here)
+          redrawChart(newApiUrl); // Redraw the chart with the updated URL
         }
       }
-    }
-  ]
-}
+    );
 
-      };
+    onMounted(() => {
+      // Load Google Charts and initialize the chart
+      const url = props.apiUrl == null? "http://127.0.0.1:8000/api/gene-data?gene_id[]=NR1H5P&disease=Disease&expriment=&sra=": props.apiUrl;
+      google.charts.load('upcoming', { packages: ['vegachart'] }).then(() => {
+        google.charts.setOnLoadCallback(() => {
+        const dataTable = new google.visualization.DataTable();
+        
+        console.log('url',url);
+        chartOptions.value = {
+          'vega': {
+                "$schema": "https://vega.github.io/schema/vega/v5.json",
+                "width": 500,
+                "height": 500,
+                "padding": 50,
 
-      const chart = new google.visualization.VegaChart(document.getElementById('heatmap'));
-      chart.draw(dataTable, options);
+                "title": {
+                  "text": "Heatmap",
+                  "anchor": "middle",
+                  "fontSize": 16,
+                  "frame": "group",
+                  "offset": 4
+                },
+
+                "data": [
+                  {
+                    "name": "gene_data", // Name of your data set
+                    "url":   url,
+                    "format": {"type": "json"},}
+                ],
+
+                "scales": [
+                  {
+                    "name": "x",
+                    "type": "band",
+                    "domain": {"data": "gene_data", "field": "SRA"},
+                    "range": "width"
+
+                  },
+                  {
+                    "name": "y",
+                    "type": "band",
+                    "domain": {"data": "gene_data", "field": "gene_id"},
+                    "range": "height",
+                    
+                    
+                  },
+                  {
+                    "name": "color",
+                    "type": "linear",
+                    "range": {"scheme": "redyellowblue"},
+                    "domain": {"data": "gene_data", "field": "value"},
+                    "reverse": true,
+                    "zero": false, "nice": true
+                  }
+                ],
+
+                "axes": [
+                  {"orient": "bottom", "scale": "x", "domain": false, "title": "SRA"},
+                  {
+                  "orient": "left",
+                  "scale": "y",
+                  "domain": false,
+                  "title": "Gene ID",
+                  
+                }
+                ],
+
+                "legends": [
+                  {
+                    "fill": "color",
+                    "type": "gradient",
+                    "title": "Value",
+                    "titleFontSize": 12,
+                    "titlePadding": 4,
+                    "gradientLength": {"signal": "height - 16"}
+                  }
+                ],
+
+                "marks": [
+                  {
+                    "type": "rect",
+                    "from": {"data": "gene_data"},
+                    "encode": {
+                      "enter": {
+                        "x": {"scale": "x", "field": "SRA"},
+                        "y": {"scale": "y", "field": "gene_id"},
+                        "width": {"value": 50},
+                        "height": {"scale": "y", "band": 1},
+                        "tooltip": {
+                          "signal":
+                            "datum.SRA + ' - ' + datum.gene_id + ': ' + datum.value"
+                        }
+                      },
+                      "update": {
+                        "fill": {"scale": "color", "field": "value"}
+                      }
+                    }
+                  }
+                ]
+              }
+        };
+        console.log('chartOptions.value',chartOptions.value);
+        chart = new google.visualization.VegaChart(document.getElementById('heatmap'));
+        chart.draw(dataTable, chartOptions.value);
+      });
+      });
     });
-  }
+    return {
+      chartData,
+    };
+  },
+};
+</script>
+
+
+<style>
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  margin-bottom: 40px !important;
+}
+.selection-class {
+  background-color: #fff;
+  padding: 20px;
 }
 
-// import axios from 'axios';
-
-// import * as Vue from 'vue';
-// import google from 'google-charts';
-
-// // Initialize Google Charts when your app is ready
-// google.charts.load('current', {
-//   packages: ['corechart'],
-//   callback: function () {
-//     drawChart1();
-//     drawChart2();
-//   }
-// });
-// google.charts.setOnLoadCallback(initializeCharts);
-
-// // function initializeCharts() {
-// //   // Your chart initialization code here
-// // }
-
-
-// export default {
-//   name: 'Heatmap',
-//   data () {
-//     return {
-//       data: {
-//         gene_ids: [],
-//         disease: '',
-//         experiment: '',
-//         sra: ''
-//       }
-//     }
-//   },
-//   mounted () {
-//     const url = 'http://127.0.0.1:8000/api/gene-data';
-//     const params = {
-//       gene_id: this.gene_ids,
-//       disease: this.disease,
-//       experiment: this.experiment,
-//       sra: this.sra
-//     };
-//     axios.get(url, { params })
-//       .then(response => {
-//         this.data.data = response.data;
-//         const vegaSpec = vegaLite.parse(
-//           `
-//         {
-//             data: {
-//                 url: './data/heatmap.json'
-//             },
-//             mark: 'rect',
-//             encoding: {
-//                 x: {
-//                 field: 'x',
-//                 type: 'ordinal'
-//                 },
-//                 y: {
-//                 field: 'y',
-//                 type: 'ordinal'
-//                 },
-//                 color: {
-//                 field: 'value',
-//                 type: 'quantitative',
-//                 scale: {
-//                     range: ['red', 'blue']
-//                 }
-//                 }
-//             }
-//         }
-//       `
-//         );
-//         vega.embed('#heatmap', vegaSpec);
-//       })
-//       .catch(error => {
-//         console.log(error);
-//       });
-
-//       google.charts.setOnLoadCallback(() => {
-//       axios
-//         .get(url, { params })
-//         .then(response => {
-//           this.data.data = response.data;
-//           const vegaSpec = Vue.vegaLite.parse(/* ... your Vega-Lite spec ... */);
-//           Vue.vega.embed('#heatmap', vegaSpec);
-//         })
-//         .catch(error => {
-//           console.log(error);
-//         });
-//     });
-
-//   }
-// }
-
-</script>
+</style>

@@ -18,7 +18,7 @@ Route::get('/unique-gene-ids', 'App\Http\Controllers\GeneDataController@uniqueGe
 Route::get('/unique-sras', 'App\Http\Controllers\GeneDataController@uniqueSras');
 Route::get('/unique-expriments', 'App\Http\Controllers\GeneDataController@uniqueExpriments');
 Route::get('/diseases', 'App\Http\Controllers\GeneDataController@getPossibleDiseases');
-Route::get('/possible-experiments', 'App\Http\Controllers\GeneDataController@getPossibleExperiments');
+Route::get('/possible-expriments', 'App\Http\Controllers\GeneDataController@getPossibleExpriments');
 Route::get('/possible-sras', 'App\Http\Controllers\GeneDataController@getPossibleSras');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

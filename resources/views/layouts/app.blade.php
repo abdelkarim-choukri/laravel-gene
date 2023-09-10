@@ -25,7 +25,7 @@
     <heade></heade>
     <div class='select'>
         <selection></selection>
-        <heatmap></heatmap>
+        <!-- <heatmap></heatmap> -->
     </div>
     <foote></foote>
 </div>
