@@ -10,12 +10,54 @@ use App\Models\GeneData;
 class GeneDataController extends Controller
 {
 
+// public function index(Request $request){
+//     $query = GeneData::query();
+
+//     if ($request->has('gene_id')) {
+//         $geneIds = (array) $request->input('gene_id');
+//         $query->whereIn('gene_id', $geneIds);
+//     }
+
+//     // ... (add more conditions for other variables if needed)
+
+//     $geneData = $query->select('SRA', 'Expriment', 'Disease', 'gene_id', 'value')
+//         ->groupBy('SRA', 'Expriment', 'Disease', 'gene_id', 'value')
+//         ->get();
+
+//     // Prepare the data for the heatmap
+//     $heatmapData = $geneData->map(function ($data) {
+//         return [
+//             'SRA' => $data->SRA,
+//             'Expriment' => $data->Expriment,
+//             'Disease' => $data->Disease,
+//             'gene_id' => $data->gene_id,
+//             'value' => $data->value,
+//         ];
+//     });
+
+//     return response()->json($heatmapData);
+// }
 public function index(Request $request){
     $query = GeneData::query();
 
     if ($request->has('gene_id')) {
         $geneIds = (array) $request->input('gene_id');
         $query->whereIn('gene_id', $geneIds);
+    }
+
+    if ($request->has('disease')) {
+        $disease = $request->input('disease');
+        $query->where('Disease', $disease);
+    }
+
+    if ($request->has('expriment')) {
+        $expriment = $request->input('expriment');
+        $query->where('Expriment', $expriment);
+    }
+
+    if ($request->has('sra')) {
+        $expriment = $request->input('sra');
+        $query->where('SRA', $expriment);
     }
 
     // ... (add more conditions for other variables if needed)
@@ -37,7 +79,6 @@ public function index(Request $request){
 
     return response()->json($heatmapData);
 }
-
 public function uniqueGeneIds() {
     $uniqueGeneIds = GeneData::distinct()
         ->inRandomOrder()

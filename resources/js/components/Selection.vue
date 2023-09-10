@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    <Heatmap :apiUrl="apiUrlFromSelection" /> <Heatmap />
+    <Heatmap :apiUrl="apiUrlFromSelection" :nDiseases="this.diseases.length" :sra="this.sra"   /> <Heatmap />
     
     </div>
 </template>
@@ -102,6 +102,7 @@ export default {
     }
   },
   mounted() {
+    console.log('diseases.length',)
     this.loadUniqueGeneIds();
     this.loadUniqueDiseases();
     watchEffect(() => {
@@ -179,31 +180,41 @@ async loadUniqueDiseases() {
         console.error(error);
       }
     },
-    constructApiUrl() {
-      // Construct the API URL string without making the axios request
-      const geneIds = this.geneIds;
-      const disease = this.disease;
-      const expriment = this.expriment;
-      const sra = this.sra;
+// constructApiUrl() {
+//   const { geneIds, disease, expriment, sra } = this;
+//   const baseUrl = 'http://127.0.0.1:8000/api/gene-data';
   
-      const baseUrl = 'http://127.0.0.1:8000/api/gene-data';
+//   const geneIdQueryString = geneIds.map(geneId => `gene_id[]=${geneId}`).join('&');
+//   const queryString = `?${geneIdQueryString}&disease=${disease}&expriment=${expriment}&sra=${sra}`;
   
-      // Create an array of query string parts for gene_id
-      const geneIdParts = geneIds.map(geneId => `gene_id[]=${geneId}`);
+//   this.apiUrlFromSelection = baseUrl + queryString;
   
-      // Combine the gene_id parts into a single string with '&' as the separator
-      const geneIdQueryString = geneIdParts.join('&');
+//   console.log('apiUrlFromSelection', this.apiUrlFromSelection);
+// },
+
+constructApiUrl() {
+  const { geneIds, disease, expriment, sra } = this;
+  const baseUrl = 'http://127.0.0.1:8000/api/gene-data';
+  console.log( geneIds, disease, expriment, sra )
+  const geneIdQueryString = geneIds.map(geneId => `gene_id[]=${geneId}`).join('&');
+  let queryString = '';
+if (disease =='All') {
+  queryString = `?${geneIdQueryString}`;
+} else if (expriment =='All') {
+  queryString = `?${geneIdQueryString}&disease=${disease}`;
+} else if (sra == 'All') {
+  queryString = `?${geneIdQueryString}&disease=${disease}&expriment=${expriment}`;
+} else {
+  queryString = `?${geneIdQueryString}&disease=${disease}&expriment=${expriment}&sra=${sra}`;
+}
+
+  // const queryString = `?${geneIdQueryString}&disease=${updatedDisease}&expriment=${updatedExpriment}&sra=${updatedSra}`;
   
-      // Construct the complete query string
-      const queryString = `?${geneIdQueryString}&disease=${disease}&expriment=${expriment}&sra=${sra}`;
+  this.apiUrlFromSelection = baseUrl + queryString;
   
-      // Combine the base URL and the query string
-      this.apiUrlFromSelection = baseUrl + queryString;
-  
-      // Do something with the apiUrlFromSelection if needed
-      console.log('apiUrlFromSelection',this.apiUrlFromSelection);
-      
-    }
+  console.log('apiUrlFromSelection', this.apiUrlFromSelection);
+}
+
   },
   
 }

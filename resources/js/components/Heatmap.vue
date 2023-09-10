@@ -12,6 +12,8 @@ export default {
   name: 'Heatmap',
   props: {
     apiUrl: String, // Assuming apiUrl is passed as a string
+    nDiseases: Number,
+    sra: String,
   },
   setup(props) {
     const chartData = ref(null);
@@ -19,15 +21,14 @@ export default {
     let chart = null; // Variable to store the chart instance
     const chartOptions = ref(null); // Variable to store chart options
 
-    // Function to redraw the chart with the updated URL
-    const redrawChart = (newApiUrl) => {
-      const dataTable = new google.visualization.DataTable();
-      if (chart && chartOptions.value) {
-        chartOptions.value.vega.data[0].url = newApiUrl; // Update the URL in the chart options
-        console.log('chartOptions', chartOptions.value);
-        chart.draw(dataTable, chartOptions.value); // Redraw the chart with updated options
-      }
-    };
+// Function to redraw the chart with the updated URL
+const redrawChart = (newApiUrl) => {
+  if (chart && chartOptions.value) {
+    chartOptions.value.vega.data[0].url = newApiUrl; // Update the URL in the chart options
+    console.log('chartOptions', chartOptions.value);
+    chart.draw(new google.visualization.DataTable(), chartOptions.value); // Redraw the chart with updated options
+  }
+};
 
     // Create a watch function to react to changes in the apiUrl prop
     watch(
@@ -35,11 +36,23 @@ export default {
       (newApiUrl, oldApiUrl) => {
         // apiUrl has changed, update the chart
         if (newApiUrl !== oldApiUrl) {
-          chartData.value = newApiUrl; // Update chart data (you can also trigger a chart redraw here)
+          // const asr= newApiUrl.split('&sra=')[1] === null ? null : newApiUrl.split('&sra=')[1];
+          // console.log('asr',asr)
+          console.log("props.sra",props.sra)
+          if (props.sra  == 'All'){ 
+            console.log(props.nDiseases)
+            chartOptions.value.vega.marks[0].encode.enter.width.value = 50;
+            console.log("chartOptions.value.vega.marks[0].encode.enter.width.value",chartOptions.value.vega.marks[0].encode.enter.width.value)
+            chartData.value = newApiUrl; // Update chart data (you can also trigger a chart redraw here)
           redrawChart(newApiUrl); // Redraw the chart with the updated URL
-        }
+          }else{
+            chartOptions.value.vega.marks[0].encode.enter.width.value = 500; // Update chart data (you can also trigger a chart redraw here)
+            redrawChart(newApiUrl); // Redraw the chart with the updated URL
+          }
+        } 
       }
     );
+
 
     onMounted(() => {
       // Load Google Charts and initialize the chart
@@ -54,7 +67,7 @@ export default {
                 "$schema": "https://vega.github.io/schema/vega/v5.json",
                 "width": 500,
                 "height": 500,
-                "padding": 50,
+                "padding": 5,
 
                 "title": {
                   "text": "Heatmap",
@@ -127,7 +140,7 @@ export default {
                       "enter": {
                         "x": {"scale": "x", "field": "SRA"},
                         "y": {"scale": "y", "field": "gene_id"},
-                        "width": {"value": 50},
+                        "width": {"value": 500/12},
                         "height": {"scale": "y", "band": 1},
                         "tooltip": {
                           "signal":
@@ -141,8 +154,8 @@ export default {
                   }
                 ]
               }
-        };
-        console.log('chartOptions.value',chartOptions.value);
+        };                               
+        console.log('chartOptions.value',chartOptions.value.vega.marks[0].encode.enter.width.value);
         chart = new google.visualization.VegaChart(document.getElementById('heatmap'));
         chart.draw(dataTable, chartOptions.value);
       });
