@@ -1,9 +1,9 @@
 
 <template>
-<footer class="bg-light mt-5">
+<footer class="bg-light mt-5 ">
         <div class="container">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 text-center">
                     <img src="/images/agc_logo.png" alt="agc" class="img-fluid" />
                 </div>
                 <div class="col-md-8">
@@ -23,7 +23,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">            
+                <div class="col-md-2 text-center">            
                     <img src="/images/um6p_logo.png" alt="Image 3" class="img-fluid" />            
                 </div>
             </div>
@@ -43,8 +43,13 @@
   height: 56px;
 }
 footer {
-  padding-top: 3% !important;
+  padding-top: 5% !important;
+  padding-bottom: 5% !important;
   background-color: #36383a !important;
   color: white;
+}
+.mt-5 {
+    margin-top: 0px!important;
+    padding-bottom: 10px !important;
 }
 </style>

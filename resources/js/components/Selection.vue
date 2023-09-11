@@ -1,5 +1,5 @@
 <template >
-  <div class='select'>
+  <div >
         
     <div class="container selection-class mb-3 selec">
       <div class="box shadow-lg rounded ">
@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    <Heatmap :apiUrl="apiUrlFromSelection" :nDiseases="this.diseases.length" :sra="this.sra"   /> <Heatmap />
+    <Heatmap :apiUrl="apiUrlFromSelection" :nDiseases="this.diseases.length" :sra="this.sra" :abbreviation="this.abbreviation"  /> 
     
     </div>
 </template>
@@ -83,6 +83,15 @@ import { ref,watch } from 'vue';
 import Multiselect from '@vueform/multiselect'
 import { watchEffect } from 'vue';
 import Heatmap from './Heatmap.vue';
+// async function LoadUniqueAbbreviations(url) {
+//   try {
+//     const response = await axios.get(url);
+//     this.abbreviation = response.data;
+//     console.log('d', response.data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 export default {
   components: {
     Multiselect,
@@ -90,15 +99,16 @@ export default {
   },
   data() {
     return {
-      geneIds: [],
-      disease: '',
-      expriment: '',
-      sra: '',
-      genes: [], // Define your genes data here
+      geneIds:['LOC124900550', 'TDRD5', 'LOC124904954', 'LINC01224', 'LOC105370990'],
+      disease: 'Autism',
+      expriment: 'All',
+      sra: 'All',
+      genes:['LOC124900550', 'TDRD5', 'LOC124904954', 'LINC01224', 'LOC105370990'], // Define your genes data here
       sras: [] ,  // Define your sras data here
       expriments: [], // Define your expriments data here
       diseases: [],
       apiUrlFromSelection: '',
+      abbreviation: ['PT','CT'],
     }
   },
   mounted() {
@@ -107,25 +117,19 @@ export default {
     this.loadUniqueDiseases();
     watchEffect(() => {
 
-      if (this.disease === null || this.disease === '') {
+      if (this.disease === null ) {
         this.expriments = [{ value: 'sorry', label: 'sorry, no match options', disabled: true },];
         this.sras = [{ value: 'sorry', label: 'sorry, no match options', disabled: true },];
       } else {
-        this.loadUniqueSras();
         this.loadUniqueExpriments();
+        this.loadUniqueSras();
       }
     }, [this.disease]);
   },
 
   methods: {
-// async select() {
-//   // try {
-//     const geneIds = this.geneIds;
-//     const disease = this.disease;
-//     const expriment = this.expriment;
-//     const sra = this.sra;
 
-//    },
+
 async loadUniqueGeneIds() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/unique-gene-ids');
@@ -137,27 +141,29 @@ async loadUniqueGeneIds() {
     },
 async loadUniqueSras() {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/unique-sras');
+    const response = await axios.get('http://127.0.0.1:8000/api/possible-sras',
+    {
+      params: {
+        gene_id: this.geneIds,
+        disease: this.disease==='All' ? null : this.disease,
+        expriment: this.expriment==='All' ? null : this.expriment,
+      },
+    });
+     console.log('response',response.data)
     this.sras = ['All',...response.data]; // Assign the response data to the sras property
   } catch (error) {
     console.error(error);
   }
   },
 async loadUniqueExpriments() {
-      // try {
-      //   const response = await axios.get('http://127.0.0.1:8000/api/unique-expriments');
-      //   this.expriments = ['All',...response.data];
-      // } catch (error) {
-      //   console.error(error);
-      // }
       try {
-    const selectedGeneIds = this.geneIds;
-    const selectedDisease = this.disease;
+    // const selectedGeneIds = this.geneIds;
+    // const selectedDisease = this.disease;
 
     const response = await axios.get('http://127.0.0.1:8000/api/possible-expriments', {
       params: {
         gene_id: this.geneIds,
-        disease: this.disease,
+        disease: this.disease==='All' ? null : this.disease,
       },
     });
 
@@ -180,38 +186,59 @@ async loadUniqueDiseases() {
         console.error(error);
       }
     },
-// constructApiUrl() {
-//   const { geneIds, disease, expriment, sra } = this;
-//   const baseUrl = 'http://127.0.0.1:8000/api/gene-data';
-  
-//   const geneIdQueryString = geneIds.map(geneId => `gene_id[]=${geneId}`).join('&');
-//   const queryString = `?${geneIdQueryString}&disease=${disease}&expriment=${expriment}&sra=${sra}`;
-  
-//   this.apiUrlFromSelection = baseUrl + queryString;
-  
-//   console.log('apiUrlFromSelection', this.apiUrlFromSelection);
-// },
+
+    async loadUniqueAbbreviations() {
+  try {
+    const { geneIds, disease, expriment, sra } = this;
+
+    // Replace 'All' with ''
+    const modifiedDisease = disease === 'All' ? '' : disease;
+    const modifiedExpriment = expriment === 'All' ? '' : expriment;
+    const modifiedSra = sra === 'All' ? '' : sra;
+    console.log('selectedGeneIds' ,geneIds);
+    console.log('selectedDisease' ,modifiedDisease);
+    console.log('selectedExpriment' ,modifiedExpriment);
+    console.log('selectedSra' ,modifiedSra);
+    const response = await axios.get('http://127.0.0.1:8000/api/unique-abbreviation', {
+      params: {
+        gene_id: geneIds,
+        disease: modifiedDisease,
+        expriment: modifiedExpriment,
+        sra: modifiedSra,
+      },
+    });
+    console.log('d' ,response.data);
+    this.abbreviation = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+},
 
 constructApiUrl() {
   const { geneIds, disease, expriment, sra } = this;
   const baseUrl = 'http://127.0.0.1:8000/api/gene-data';
-  console.log( geneIds, disease, expriment, sra )
-  const geneIdQueryString = geneIds.map(geneId => `gene_id[]=${geneId}`).join('&');
-  let queryString = '';
-if (disease =='All') {
-  queryString = `?${geneIdQueryString}`;
-} else if (expriment =='All') {
-  queryString = `?${geneIdQueryString}&disease=${disease}`;
-} else if (sra == 'All') {
-  queryString = `?${geneIdQueryString}&disease=${disease}&expriment=${expriment}`;
-} else {
-  queryString = `?${geneIdQueryString}&disease=${disease}&expriment=${expriment}&sra=${sra}`;
-}
+  const queryParams = [];
 
-  // const queryString = `?${geneIdQueryString}&disease=${updatedDisease}&expriment=${updatedExpriment}&sra=${updatedSra}`;
-  
+  if (geneIds.length > 0) {
+    queryParams.push(`gene_id[]=${geneIds.join('&gene_id[]=')}`);
+  }
+
+  if (disease !== 'All') {
+    queryParams.push(`disease=${disease}`);
+  }
+
+  if (expriment !== 'All') {
+    queryParams.push(`expriment=${expriment}`);
+  }
+
+  if (sra !== 'All') {
+    queryParams.push(`sra=${sra}`);
+  }
+
+  const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+
   this.apiUrlFromSelection = baseUrl + queryString;
-  
+  this.loadUniqueAbbreviations();
   console.log('apiUrlFromSelection', this.apiUrlFromSelection);
 }
 

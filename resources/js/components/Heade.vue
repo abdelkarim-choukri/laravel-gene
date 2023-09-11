@@ -48,9 +48,12 @@
 }
 .container.text1 {
   background-color: #6E85B7 !important;
+  margin-bottom: 3% !important;
 }
 
 .Homebtn{
   color: #ffc56c!important;
 }
+
+
 </style>

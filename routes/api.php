@@ -16,6 +16,7 @@ use App\Http\Controllers\GeneDataController;
 Route::get('gene-data', 'App\Http\Controllers\GeneDataController@index');
 Route::get('/unique-gene-ids', 'App\Http\Controllers\GeneDataController@uniqueGeneIds');
 Route::get('/unique-sras', 'App\Http\Controllers\GeneDataController@uniqueSras');
+Route::get('/unique-abbreviation', 'App\Http\Controllers\GeneDataController@uniqueAbbreviation');
 Route::get('/unique-expriments', 'App\Http\Controllers\GeneDataController@uniqueExpriments');
 Route::get('/diseases', 'App\Http\Controllers\GeneDataController@getPossibleDiseases');
 Route::get('/possible-expriments', 'App\Http\Controllers\GeneDataController@getPossibleExpriments');
