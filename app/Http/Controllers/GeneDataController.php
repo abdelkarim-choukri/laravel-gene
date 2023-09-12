@@ -48,21 +48,21 @@ public function index(Request $request)
     });
 
     // Convert the sorted array back to an associative array if needed
-    $sortedGeneData = collect($geneDataArray);
+    // $sortedGeneData = collect($geneDataArray);
 
     // Prepare the data for the heatmap
-    $heatmapData = $sortedGeneData->map(function ($data) {
-        return [
-            'SRA' => $data['SRA'],
-            'Expriment' => $data['Expriment'],
-            'Disease' => $data['Disease'],
-            'gene_id' => $data['gene_id'],
-            'value' => $data['value'],
-            'Abbreviation' => $data['Abbreviation'],
-        ];
-    });
+    // $heatmapData = $sortedGeneData->map(function ($data) {
+    //     return [
+    //         'SRA' => $data['SRA'],
+    //         'Expriment' => $data['Expriment'],
+    //         'Disease' => $data['Disease'],
+    //         'gene_id' => $data['gene_id'],
+    //         'value' => $data['value'],
+    //         'Abbreviation' => $data['Abbreviation'],
+    //     ];
+    // });
 
-    return response()->json($heatmapData);
+    return response()->json($geneDataArray);
 }
 
 public function uniqueGeneIds() {
