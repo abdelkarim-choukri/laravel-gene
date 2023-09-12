@@ -143,7 +143,7 @@ const redrawChart = (newApiUrl) => {
                     "type": "band",
                     "domain": {"data": "gene_data", "field": "SRA"},
                     "range": "width",
-   
+                    
 
                   },
                   {
@@ -156,11 +156,18 @@ const redrawChart = (newApiUrl) => {
                   },
                   {
                     "name": "color",
-                    "type": "linear",
+                    "type": "pow",
                     "range": {"scheme": "redyellowblue"},
                     "domain": {"data": "gene_data", "field": "value"},
                     "reverse": true,
                     "zero": false, "nice": true
+                  },
+                  {
+                    "name": "ador",
+                    "type": "band", // Use a band scale for categorical data
+                    "domain": {"data": "gene_data", "field": "Abbreviation"},
+                    "range": "width",
+                    "padding": 0.1 // Adjust padding as needed
                   }
                 ],
 
@@ -172,6 +179,12 @@ const redrawChart = (newApiUrl) => {
                   "domain": false,
                   "title": "Gene ID",
                   
+                },
+                {
+                  "orient": "top",
+                  "scale": "ador",
+                  "domain": false,
+                  "title": "Abbreviation"
                 }
                 ],
 
@@ -183,7 +196,8 @@ const redrawChart = (newApiUrl) => {
                     "titleFontSize": 12,
                     "titlePadding": 4,
                     "gradientLength": {"signal": "height - 16"}
-                  }
+                  },
+                  
                 ],
 
                 "marks": [
@@ -194,11 +208,12 @@ const redrawChart = (newApiUrl) => {
                       "enter": {
                         "x": {"scale": "x", "field": "SRA"},
                         "y": {"scale": "y", "field": "gene_id"},
+                        "abbr": {"scale": "ador", "field": "Abbreviation"},
                         "width": {"value": 500/12},
                         "height": {"scale": "y", "band": 1},
                         "tooltip": {
                           "signal":
-                            "datum.SRA + ' - ' + datum.gene_id + ': ' + datum.value"
+                            "datum.SRA + ' - ' + datum.gene_id + ': ' + datum.value + ' (' + datum.Abbreviation + ')'"
                         }
                       },
                       "update": {

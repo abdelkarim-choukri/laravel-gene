@@ -10,34 +10,9 @@ use App\Models\GeneData;
 class GeneDataController extends Controller
 {
 
-// public function index(Request $request){
-//     $query = GeneData::query();
 
-//     if ($request->has('gene_id')) {
-//         $geneIds = (array) $request->input('gene_id');
-//         $query->whereIn('gene_id', $geneIds);
-//     }
-
-//     // ... (add more conditions for other variables if needed)
-
-//     $geneData = $query->select('SRA', 'Expriment', 'Disease', 'gene_id', 'value')
-//         ->groupBy('SRA', 'Expriment', 'Disease', 'gene_id', 'value')
-//         ->get();
-
-//     // Prepare the data for the heatmap
-//     $heatmapData = $geneData->map(function ($data) {
-//         return [
-//             'SRA' => $data->SRA,
-//             'Expriment' => $data->Expriment,
-//             'Disease' => $data->Disease,
-//             'gene_id' => $data->gene_id,
-//             'value' => $data->value,
-//         ];
-//     });
-
-//     return response()->json($heatmapData);
-// }
-public function index(Request $request){
+public function index(Request $request)
+{
     $query = GeneData::query();
 
     if ($request->has('gene_id')) {
@@ -62,24 +37,34 @@ public function index(Request $request){
 
     // ... (add more conditions for other variables if needed)
 
-    $geneData = $query->select('SRA', 'Expriment', 'Disease', 'gene_id', 'value','Abbreviation')
-        ->groupBy('SRA', 'Expriment', 'Disease', 'gene_id', 'value','Abbreviation')
+    $geneData = $query->select('SRA', 'Expriment', 'Disease', 'gene_id', 'value', 'Abbreviation')
+        ->groupBy('SRA', 'Expriment', 'Disease', 'gene_id', 'value', 'Abbreviation')
         ->get();
 
+    // Convert the collection to a standard indexed array and sort it by 'Abbreviation'
+    $geneDataArray = $geneData->toArray();
+    usort($geneDataArray, function ($a, $b) {
+        return strcmp($a['Abbreviation'], $b['Abbreviation']);
+    });
+
+    // Convert the sorted array back to an associative array if needed
+    $sortedGeneData = collect($geneDataArray);
+
     // Prepare the data for the heatmap
-    $heatmapData = $geneData->map(function ($data) {
+    $heatmapData = $sortedGeneData->map(function ($data) {
         return [
-            'SRA' => $data->SRA,
-            'Expriment' => $data->Expriment,
-            'Disease' => $data->Disease,
-            'gene_id' => $data->gene_id,
-            'value' => $data->value,
-            'Abbreviation' => $data->Abbreviation,
+            'SRA' => $data['SRA'],
+            'Expriment' => $data['Expriment'],
+            'Disease' => $data['Disease'],
+            'gene_id' => $data['gene_id'],
+            'value' => $data['value'],
+            'Abbreviation' => $data['Abbreviation'],
         ];
     });
 
     return response()->json($heatmapData);
 }
+
 public function uniqueGeneIds() {
     $uniqueGeneIds = GeneData::distinct()
         ->inRandomOrder()
