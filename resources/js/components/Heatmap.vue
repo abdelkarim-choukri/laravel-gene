@@ -404,7 +404,9 @@ const loadData = async (url) => {
  
 }
 .mycss{
-  overflow: auto;
+  /* overflow: auto; */
+  margin-bottom: 0px !important;
+
 }
 /* .map {
   /* margin: auto; */
