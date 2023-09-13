@@ -86,6 +86,38 @@ public function uniqueSras(){
 
     return response()->json($uniqueSras);
 }
+// public function uniqueAbbreviation(Request $request){
+//     // Retrieve the selected filters from the request
+//     $selectedGeneIds = $request->input('gene_id');
+//     $selectedDisease = $request->input('disease');
+//     $selectedExpriment = $request->input('expriment');
+//     $selectedSra = $request->input('sra');
+
+//     // Start building the query
+//     $query = GeneData::query();
+
+//     // Add filters to the query as needed
+//     if ($selectedGeneIds) {
+//         $query->whereIn('gene_id', $selectedGeneIds);
+//     }
+
+//     if ($selectedDisease) {
+//         $query->where('disease', $selectedDisease);
+//     }
+
+//     if ($selectedExpriment) {
+//         $query->where('expriment', $selectedExpriment);
+//     }
+
+//     if ($selectedSra) {
+//         $query->where('sra', $selectedSra);
+//     }
+
+//     // Retrieve unique 'Abbreviation' values based on the filtered query
+//     $uniqueAbbreviation = $query->distinct()->pluck('Abbreviation')->toArray();
+
+//     return response()->json($uniqueAbbreviation);
+// }
 public function uniqueAbbreviation(Request $request){
     // Retrieve the selected filters from the request
     $selectedGeneIds = $request->input('gene_id');
@@ -113,11 +145,18 @@ public function uniqueAbbreviation(Request $request){
         $query->where('sra', $selectedSra);
     }
 
-    // Retrieve unique 'Abbreviation' values based on the filtered query
-    $uniqueAbbreviation = $query->distinct()->pluck('Abbreviation')->toArray();
+    // Group the results by 'Abbreviation' and count the occurrences
+    $uniqueAbbreviationCounts = $query->select('Abbreviation', \DB::raw('count(*) as count'))
+        ->groupBy('Abbreviation')
+        ->get();
 
-    return response()->json($uniqueAbbreviation);
+    return response()->json($uniqueAbbreviationCounts);
 }
+
+
+
+
+
 
 public function uniqueExpriments(){
     $uniqueExpriments = GeneData::distinct()->pluck('Expriment')->toArray();

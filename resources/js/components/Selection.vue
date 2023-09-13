@@ -70,7 +70,11 @@
         </div>
       </div>
     </div>
-    <Heatmap :apiUrl="apiUrlFromSelection" :nDiseases="this.diseases.length" :sra="this.sra" :abbreviation="this.abbreviation"  /> 
+    <Heatmap :apiUrl="apiUrlFromSelection"
+             :nDiseases="this.diseases.length" 
+             :sra="this.sra" 
+             :abbreviation="this.abbreviation"
+             :AbbCounts="this.AbbCounts"  /> 
     
     </div>
 </template>
@@ -108,13 +112,28 @@ export default {
       expriments: [], // Define your expriments data here
       diseases: [],
       apiUrlFromSelection: '',
-      abbreviation: ['PT','CT'],
+      abbreviation: [
+    {
+        "Abbreviation": "CT",
+        "count": 30
+    },
+    {
+        "Abbreviation": "PT",
+        "count": 35
+    }
+],
+      AbbCounts:{
+    "CT": 6,
+    "PT": 7
+},
     }
   },
   mounted() {
-    console.log('diseases.length',)
+    // console.log(this.AbbCounts);
     this.loadUniqueGeneIds();
     this.loadUniqueDiseases();
+    this.loadUniqueAbbreviations();
+    
     watchEffect(() => {
 
       if (this.disease === null ) {
@@ -187,7 +206,7 @@ async loadUniqueDiseases() {
       }
     },
 
-    async loadUniqueAbbreviations() {
+async loadUniqueAbbreviations() {
   try {
     const { geneIds, disease, expriment, sra } = this;
 
@@ -195,10 +214,10 @@ async loadUniqueDiseases() {
     const modifiedDisease = disease === 'All' ? '' : disease;
     const modifiedExpriment = expriment === 'All' ? '' : expriment;
     const modifiedSra = sra === 'All' ? '' : sra;
-    console.log('selectedGeneIds' ,geneIds);
-    console.log('selectedDisease' ,modifiedDisease);
-    console.log('selectedExpriment' ,modifiedExpriment);
-    console.log('selectedSra' ,modifiedSra);
+    // console.log('selectedGeneIds' ,geneIds);
+    // console.log('selectedDisease' ,modifiedDisease);
+    // console.log('selectedExpriment' ,modifiedExpriment);
+    // console.log('selectedSra' ,modifiedSra);
     const response = await axios.get('http://127.0.0.1:8000/api/unique-abbreviation', {
       params: {
         gene_id: geneIds,
@@ -239,8 +258,43 @@ constructApiUrl() {
 
   this.apiUrlFromSelection = baseUrl + queryString;
   this.loadUniqueAbbreviations();
-  console.log('apiUrlFromSelection', this.apiUrlFromSelection);
-}
+  this.loadData(this.apiUrlFromSelection);
+  // console.log('apiUrlFromSelection', this.apiUrlFromSelection);
+},
+async loadData(url) {
+  try {
+    const response = await axios.get(url);
+    const data = response.data; // Get the response data
+
+    // Create sets to store unique SRA values for CT and PT
+    const uniqueSRA_CT = new Set();
+    const uniqueSRA_PT = new Set();
+
+    // Iterate through the data and add unique SRA values to the respective sets
+    data.forEach(item => {
+      if (item.Abbreviation === 'CT') {
+        uniqueSRA_CT.add(item.SRA);
+      } else if (item.Abbreviation === 'PT') {
+        uniqueSRA_PT.add(item.SRA);
+      }
+    });
+
+    // Get the size (count) of unique SRA values in each set
+    const countUniqueSRA_CT = uniqueSRA_CT.size;
+    const countUniqueSRA_PT = uniqueSRA_PT.size;
+
+    // Create an object to hold the counts
+    const counts = {
+      CT: countUniqueSRA_CT,
+      PT: countUniqueSRA_PT
+    };
+
+    
+    this.AbbCounts=counts; // Pass the counts object to the callback function
+  } catch (error) {
+    console.error(error);
+  }
+},
 
   },
   
