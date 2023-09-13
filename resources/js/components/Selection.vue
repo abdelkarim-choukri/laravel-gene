@@ -87,15 +87,7 @@ import { ref,watch } from 'vue';
 import Multiselect from '@vueform/multiselect'
 import { watchEffect } from 'vue';
 import Heatmap from './Heatmap.vue';
-// async function LoadUniqueAbbreviations(url) {
-//   try {
-//     const response = await axios.get(url);
-//     this.abbreviation = response.data;
-//     console.log('d', response.data);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+
 export default {
   components: {
     Multiselect,
@@ -210,14 +202,11 @@ async loadUniqueAbbreviations() {
   try {
     const { geneIds, disease, expriment, sra } = this;
 
-    // Replace 'All' with ''
+ 
     const modifiedDisease = disease === 'All' ? '' : disease;
     const modifiedExpriment = expriment === 'All' ? '' : expriment;
     const modifiedSra = sra === 'All' ? '' : sra;
-    // console.log('selectedGeneIds' ,geneIds);
-    // console.log('selectedDisease' ,modifiedDisease);
-    // console.log('selectedExpriment' ,modifiedExpriment);
-    // console.log('selectedSra' ,modifiedSra);
+
     const response = await axios.get('http://127.0.0.1:8000/api/unique-abbreviation', {
       params: {
         gene_id: geneIds,
@@ -259,7 +248,7 @@ constructApiUrl() {
   this.apiUrlFromSelection = baseUrl + queryString;
   this.loadUniqueAbbreviations();
   this.loadData(this.apiUrlFromSelection);
-  // console.log('apiUrlFromSelection', this.apiUrlFromSelection);
+
 },
 async loadData(url) {
   try {

@@ -1,12 +1,6 @@
 <template>
  <div class="container .selection-class box shadow-lg rounded mycss "  >
   <h1 class="color font-weight-bold h1 ">Heatmap</h1>
-  <!-- <div class="map "
-       :style="{
-          backgroundColor: 'green',
-      
-       }"
-  ></div> -->
   <div class="map">
     <div class="colored-section row" :style="{
       'width': getWidthForAbbreviation('CT') + getWidthForAbbreviation('PT'),
@@ -404,23 +398,13 @@ const loadData = async (url) => {
  
 }
 .mycss{
-  /* overflow: auto; */
+  
   margin-bottom: 0px !important;
 
 }
-/* .map {
-  /* margin: auto; */
-  /* padding-left: 30px; */
-  
-  /* width: 500px;
-  min-width: 500px; /* 
-  height: 7px;
-  border-radius: 3px;
-  margin-left:211px; */
-/* } */ 
+
 .h1{
-  /* margin-left:211px; */
-/* margin: auto; */
+
 margin-left:350px;
 
 }
@@ -429,33 +413,18 @@ margin-left:350px;
 }
 
 .map {
-  /* Your existing styles */
-  /* width: 500px;
-  min-width: 500px; */
+
   height: 8px;
   border-radius: 3px;
   margin-left: 212px;
   margin-bottom: -20px;
   overflow: hidden; /* Hide overflow to prevent child elements from spilling out */
   position: relative; /* Position relative to contain absolute child elements */
-  /* border-radius:3px, */
+ 
 
 }
 
-/* .red-section {
-  width: 250px;
-  height: 100%;
-  background-color: red;
-  position: absolute;
-  left: 0;
-} */
 
-/* .blue-section {
-  width: 250px;
-  height: 100%;
-  background-color: blue;
-  position: absolute;
-  left: 100px; /* Position the blue section after the red section */
 
 
 </style>
